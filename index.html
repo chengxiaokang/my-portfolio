@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 | Developer Portfolio</title>
+    <script src="https://aisearch-task.bj.bcebos.com/static/tailwindcss-3.4.17.js"></script>
+    <script src="https://aisearch-task.bj.bcebos.com/static/gsap-3.12.7.min.js"></script>
+    <style>
+        :root {
+            --primary-rgb: 0, 122, 255;
+            --accent-rgb: 88, 86, 214;
+            --code-green-rgb: 52, 211, 153;
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f5f5f7;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --text-tertiary: #86868b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .font-mono {
+            font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', monospace;
+        }
+
+        /* 极客风格背景网格 */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 122, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 122, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 浮动代码装饰 */
+        .floating-code {
+            position: fixed;
+            font-family: 'SF Mono', 'Menlo', Consolas, monospace;
+            font-size: 14px;
+            color: rgba(0, 122, 255, 0.08);
+            pointer-events: none;
+            z-index: 0;
+            animation: floatCode 20s linear infinite;
+        }
+
+        @keyframes floatCode {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* 导航栏 - Apple风格毛玻璃 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(250, 250, 250, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .nav-link {
+            position: relative;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 1px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 毛玻璃卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        /* 渐显动画 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 技能条 */
+        .skill-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            border-radius: 4px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 作品卡片 */
+        .project-card {
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-card-image {
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .project-card:hover .project-card-image img {
+            transform: scale(1.08);
+        }
+
+        .project-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .project-card:hover .project-card-overlay {
+            opacity: 1;
+        }
+
+        .view-project-btn {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transform: translateY(10px);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .project-card:hover .view-project-btn {
+            transform: translateY(0);
+        }
+
+        .tech-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'SF Mono', Menlo, Consolas, monospace;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .tech-tag:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: rgb(var(--primary-rgb));
+        }
+
+        /* 时间线 */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)), rgba(var(--code-green-rgb), 0.5));
+            border-radius: 1px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 40px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            top: 6px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 3px solid rgb(var(--primary-rgb));
+            border-radius: 50%;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            background: rgb(var(--primary-rgb));
+            box-shadow: 0 0 0 6px rgba(var(--primary-rgb), 0.15);
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        /* 代码块装饰 */
+        .code-block {
+            background: #1d1d1f;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #f5f5f7;
+            overflow-x: auto;
+        }
+
+        .code-keyword { color: #ff7ab2; }
+        .code-string { color: #bf5af2; }
+        .code-function { color: #64d2ff; }
+        .code-comment { color: #86868b; }
+        .code-variable { color: #ffd60a; }
+
+        /* 终端光标 */
+        .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: rgb(var(--code-green-rgb));
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 头像光环 */
+        .avatar-container {
+            position: relative;
+        }
+
+        .avatar-ring {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)), rgb(var(--code-green-rgb)));
+            animation: rotateRing 4s linear infinite;
+        }
+
+        @keyframes rotateRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 标签样式 */
+        .zodiac-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--accent-rgb), 0.1));
+            border: 1px solid rgba(var(--primary-rgb), 0.2);
+            border-radius: 20px;
+            font-size: 13px;
+            color: rgb(var(--primary-rgb));
+            font-weight: 500;
+        }
+
+        /* 技能图标 */
+        .skill-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover .skill-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* 章节标题装饰 */
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 28px;
+            background: linear-gradient(180deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            border-radius: 3px;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgb(var(--primary-rgb)), rgb(var(--accent-rgb)));
+            color: white;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+        }
+
+        /* 移动端菜单 */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            padding: 80px 30px 30px;
+            pointer-events: none;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+            pointer-events: auto;
+        }
+
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .timeline {
+                padding-left: 24px;
+            }
+            .timeline::before {
+                left: 6px;
+            }
+            .timeline-dot {
+                left: -24px;
+                width: 14px;
+                height: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="grid-bg"></div>
+    <div class="floating-code" style="left: 5%; animation-delay: 0s;">{ code: 'life' }</div>
+    <div class="floating-code" style="left: 15%; animation-delay: 3s;">const dev = true;</div>
+    <div class="floating-code" style="left: 25%; animation-delay: 6s;">// create</div>
+    <div class="floating-code" style="left: 70%; animation-delay: 2s;">function()</div>
+    <div class="floating-code" style="left: 80%; animation-delay: 5s;">{'<>'}</div>
+    <div class="floating-code" style="left: 90%; animation-delay: 8s;">npm run</div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#hero" class="flex items-center gap-2">
+                <span class="font-mono text-lg font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">{'<Dev/>'}</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#hero" class="nav-link active">首页</a>
+                <a href="#about" class="nav-link">关于我</a>
+                <a href="#skills" class="nav-link">技能</a>
+                <a href="#projects" class="nav-link">作品</a>
+                <a href="#experience" class="nav-link">经历</a>
+            </div>
+            <button id="menuBtn" class="md:hidden p-2" aria-label="打开菜单">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay md:hidden"></div>
+    <div id="mobileMenu" class="mobile-menu md:hidden">
+        <button id="closeMenu" class="absolute top-6 right-6 p-2 z-10" aria-label="关闭菜单">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        <div class="flex flex-col gap-6">
+            <a href="#hero" class="mobile-nav-link text-xl font-medium text-gray-800">首页</a>
+            <a href="#about" class="mobile-nav-link text-xl font-medium text-gray-800">关于我</a>
+            <a href="#skills" class="mobile-nav-link text-xl font-medium text-gray-800">技能</a>
+            <a href="#projects" class="mobile-nav-link text-xl font-medium text-gray-800">作品</a>
+            <a href="#experience" class="mobile-nav-link text-xl font-medium text-gray-800">经历</a>
+        </div>
+    </div>
+
+    <main class="relative z-10">
+        <!-- 首屏 Hero -->
+        <section id="hero" class="min-h-screen flex items-center justify-center px-6 pt-20">
+            <div class="max-w-6xl mx-auto w-full">
+                <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+                    <!-- 头像区域 -->
+                    <div class="avatar-container shrink-0 reveal">
+                        <div class="avatar-ring"></div>
+                        <div class="relative w-40 h-40 md:w-52 md:h-52 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 border-4 border-white">
+                            <svg class="w-full h-full" viewBox="0 0 200 200" fill="none">
+                                <rect width="200" height="200" fill="url(#avatarGrad)"/>
+                                <circle cx="100" cy="75" r="35" fill="white" opacity="0.9"/>
+                                <ellipse cx="100" cy="170" rx="55" ry="45" fill="white" opacity="0.9"/>
+                                <defs>
+                                    <linearGradient id="avatarGrad" x1="0" y1="0" x2="200" y2="200">
+                                        <stop stop-color="#007AFF"/>
+                                        <stop offset="1" stop-color="#5856D6"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- 介绍文字 -->
+                    <div class="text-center md:text-left reveal" style="transition-delay: 0.2s">
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6">
+                            <span class="zodiac-tag">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                水瓶座
+                            </span>
+                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm font-medium">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                开放合作
+                            </span>
+                        </div>
+                        
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+                            <span class="text-gray-900">你好，我是</span>
+                            <br>
+                            <span class="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 bg-clip-text text-transparent">李明轩</span>
+                        </h1>
+                        
+                        <p class="text-lg md:text-xl text-gray-500 mb-8 max-w-lg font-mono">
+                            <span class="code-comment">// 全栈开发者 & UI设计爱好者</span>
+                            <br>
+                            <span class="text-gray-700">const</span> <span class="text-blue-500">passion</span> = <span class="text-purple-500">'创造优雅的数字产品'</span><span class="cursor-blink"></span>
+                        </p>
+                        
+                        <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                            <a href="#projects" class="btn-primary">
+                                查看作品
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
+                            <a href="#about" class="btn-secondary">
+                                了解更多
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 滚动提示 -->
+                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
+                    <span class="text-xs font-mono">scroll down</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于我 -->
+        <section id="about" class="py-20 md:py-32 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="reveal">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold mb-12">关于我</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+                    <!-- 左侧：个人介绍 -->
+                    <div class="glass-card p-8 reveal">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="skill-icon bg-gradient-to-br from-blue-500 to-indigo-500 text-white text-lg">
+                                👨‍💻
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-2">个人简介</h3>
+                                <p class="text-gray-500 text-sm">Full-Stack Developer</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 text-gray-600 leading-relaxed">
+                            <p>
+                                我是一名热爱技术与设计的全栈开发者，拥有5年的Web开发经验。专注于创建既美观又实用的数字产品，
+                                坚信优秀的代码应该像艺术品一样优雅。
+                            </p>
+                            <p>
+                                从前端交互到后端架构，从界面设计到用户体验，我享受将复杂问题转化为简洁解决方案的过程。
+                                对新技术保持好奇心，始终在学习的道路上前行。
+                            </p>
+                            <p>
+                                工作之余喜欢探索开源项目、写技术博客，偶尔用代码做一些有趣的小玩意儿。
+                            </p>
+                        </div>
+                        
+                        <!-- 数据统计 -->
+                        <div class="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-100">
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">5+</div>
+                                <div class="text-xs text-gray-500 mt-1">年经验</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">50+</div>
+                                <div class="text-xs text-gray-500 mt-1">项目交付</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">2k+</div>
+                                <div class="text-xs text-gray-500 mt-1">GitHub Stars</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：代码风格介绍 -->
+                    <div class="reveal" style="transition-delay: 0.2s">
+                        <div class="code-block mb-6">
+                            <div class="flex items-center gap-2 mb-4 pb-4 border-b border-gray-700">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                <span class="text-gray-500 text-xs ml-2">about-me.js</span>
+                            </div>
+                            <div>
+                                <span class="code-keyword">const</span> <span class="code-variable">developer</span> = {<br>
+                                &nbsp;&nbsp;<span class="code-variable">name</span>: <span class="code-string">'李明轩'</span>,<br>
+                                &nbsp;&nbsp;<span class="code-variable">role</span>: <span class="code-string">'全栈开发工程师'</span>,<br>
+                                &nbsp;&nbsp;<span class="code-variable">location</span>: <span class="code-string">'中国 · 北京'</span>,<br>
+                                &nbsp;&nbsp;<span class="code-variable">education</span>: <span class="code-string">'计算机科学硕士'</span>,<br>
+                                &nbsp;&nbsp;<span class="code-variable">interests</span>: [<span class="code-string">'Web开发'</span>, <span class="code-string">'UI设计'</span>, <span class="code-string">'开源'</span>],<br>
+                                &nbsp;&nbsp;<span class="code-function">sayHello</span>: () => <span class="code-string">'Hello, World!'</span><br>
+                                };<br>
+                                <br>
+                                <span class="code-comment">// 永远保持对代码的热爱</span><br>
+                                <span class="code-keyword">while</span>(alive) {<br>
+                                &nbsp;&nbsp;<span class="code-function">learn</span>();<br>
+                                &nbsp;&nbsp;<span class="code-function">create</span>();<br>
+                                &nbsp;&nbsp;<span class="code-function">share</span>();<br>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="glass-card p-5 text-center">
+                                <div class="text-3xl mb-2">🎯</div>
+                                <h4 class="font-semibold text-sm mb-1">追求极致</h4>
+                                <p class="text-xs text-gray-500">关注每一个像素与细节</p>
+                            </div>
+                            <div class="glass-card p-5 text-center">
+                                <div class="text-3xl mb-2">🚀</div>
+                                <h4 class="font-semibold text-sm mb-1">高效交付</h4>
+                                <p class="text-xs text-gray-500">敏捷开发快速迭代</p>
+                            </div>
+                            <div class="glass-card p-5 text-center">
+                                <div class="text-3xl mb-2">💡</div>
+                                <h4 class="font-semibold text-sm mb-1">创新思维</h4>
+                                <p class="text-xs text-gray-500">勇于尝试新技术</p>
+                            </div>
+                            <div class="glass-card p-5 text-center">
+                                <div class="text-3xl mb-2">🤝</div>
+                                <h4 class="font-semibold text-sm mb-1">团队协作</h4>
+                                <p class="text-xs text-gray-500">开放沟通共同成长</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技能 -->
+        <section id="skills" class="py-20 md:py-32 px-6 bg-white/50">
+            <div class="max-w-6xl mx-auto">
+                <div class="reveal">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold mb-4">技能学习中</h2>
+                    <p class="text-gray-500 mb-12 max-w-2xl">技术栈持续更新，保持学习的热情。以下是我正在使用和深入学习的技术领域。</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- 前端技能 -->
+                    <div class="glass-card p-8 reveal">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xl">
+                                🎨
+                            </div>
+                            <h3 class="text-xl font-semibold">前端开发</h3>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">React / Next.js</span>
+                                    <span class="text-gray-400 text-sm font-mono">90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">Vue.js / Nuxt</span>
+                                    <span class="text-gray-400 text-sm font-mono">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">TypeScript</span>
+                                    <span class="text-gray-400 text-sm font-mono">88%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="88"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">Tailwind CSS</span>
+                                    <span class="text-gray-400 text-sm font-mono">92%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="92"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 后端技能 -->
+                    <div class="glass-card p-8 reveal" style="transition-delay: 0.1s">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-xl">
+                                ⚙️
+                            </div>
+                            <h3 class="text-xl font-semibold">后端开发</h3>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">Node.js / Express</span>
+                                    <span class="text-gray-400 text-sm font-mono">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">Python / FastAPI</span>
+                                    <span class="text-gray-400 text-sm font-mono">80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="80"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">PostgreSQL / MongoDB</span>
+                                    <span class="text-gray-400 text-sm font-mono">78%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="78"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-sm">Docker / K8s</span>
+                                    <span class="text-gray-400 text-sm font-mono">70%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-width="70"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 技能图标网格 -->
+                <div class="mt-12 reveal">
+                    <h3 class="text-lg font-semibold mb-6 text-center text-gray-600">技术栈 & 工具</h3>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">⚛️</span>
+                            <span class="text-sm font-medium">React</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">💚</span>
+                            <span class="text-sm font-medium">Vue.js</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🟦</span>
+                            <span class="text-sm font-medium">TypeScript</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🟢</span>
+                            <span class="text-sm font-medium">Node.js</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🐍</span>
+                            <span class="text-sm font-medium">Python</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🐳</span>
+                            <span class="text-sm font-medium">Docker</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🎨</span>
+                            <span class="text-sm font-medium">Figma</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">☁️</span>
+                            <span class="text-sm font-medium">AWS</span>
+                        </div>
+                        <div class="glass-card px-4 py-3 flex items-center gap-2">
+                            <span class="text-2xl">🔥</span>
+                            <span class="text-sm font-medium">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 作品项目 -->
+        <section id="projects" class="py-20 md:py-32 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="reveal">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold mb-4">作品项目</h2>
+                    <p class="text-gray-500 mb-12 max-w-2xl">精选部分代表性项目，点击卡片查看详情。</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 项目1 -->
+                    <div class="project-card glass-card reveal" data-project="1">
+                        <div class="project-card-image">
+                            <img src="http://i-blog.csdnimg.cn/img_convert/32df8bc4c7b9c8f7dbaccff172454c0a.jpeg" alt="智能电商平台" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">智能电商平台</h3>
+                                <span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">已上线</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">基于AI推荐算法的新一代电商平台，支持个性化商品推荐与智能客服。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">Node.js</span>
+                                <span class="tech-tag">MongoDB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 项目2 -->
+                    <div class="project-card glass-card reveal" data-project="2" style="transition-delay: 0.1s">
+                        <div class="project-card-image">
+                            <img src="http://q0.itc.cn/q_70/images01/20260521/f739514979184be5b5057437cda1a2ca.png" alt="数据可视化仪表盘" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">数据可视化平台</h3>
+                                <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">企业级</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">企业级数据分析仪表盘，支持多维度数据实时展示与自定义报表生成。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">Vue3</span>
+                                <span class="tech-tag">ECharts</span>
+                                <span class="tech-tag">Python</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 项目3 -->
+                    <div class="project-card glass-card reveal" data-project="3" style="transition-delay: 0.2s">
+                        <div class="project-card-image">
+                            <img src="http://b0.bdstatic.com/866850836ea55f22fa90fbde84a5aeda.jpg" alt="移动端社交APP" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">兴趣社交APP</h3>
+                                <span class="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">10w+用户</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">基于兴趣图谱的移动端社交应用，支持即时通讯、内容社区与活动组织。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">React Native</span>
+                                <span class="tech-tag">Firebase</span>
+                                <span class="tech-tag">WebSocket</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 项目4 -->
+                    <div class="project-card glass-card reveal" data-project="4">
+                        <div class="project-card-image">
+                            <img src="http://pics0.baidu.com/feed/d1160924ab18972ba5e668081bc56e999f510a28.jpeg?token=5bcf9d32cdade5746f6da1cf5d796e04" alt="AI写作助手" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">AI写作助手</h3>
+                                <span class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-full">开源项目</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">集成大语言模型的智能写作工具，支持多场景文案生成、润色与翻译。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">Next.js</span>
+                                <span class="tech-tag">OpenAI API</span>
+                                <span class="tech-tag">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 项目5 -->
+                    <div class="project-card glass-card reveal" data-project="5" style="transition-delay: 0.1s">
+                        <div class="project-card-image">
+                            <img src="http://help.fanruan.com/jiushuyun/uploads/20240725/1721886715190508.png" alt="在线教育平台" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">在线教育平台</h3>
+                                <span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">已上线</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">综合性在线学习平台，支持直播授课、录播课程、作业系统与学习数据分析。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">Vue.js</span>
+                                <span class="tech-tag">Django</span>
+                                <span class="tech-tag">WebRTC</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 项目6 -->
+                    <div class="project-card glass-card reveal" data-project="6" style="transition-delay: 0.2s">
+                        <div class="project-card-image">
+                            <img src="http://q0.itc.cn/images01/20251226/1526ae4ce6554c6a97562a5aec5941a9.png" alt="效率工具集" loading="lazy">
+                            <div class="project-card-overlay">
+                                <div class="view-project-btn">
+                                    查看详情
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold">开发者工具集</h3>
+                                <span class="text-xs text-teal-600 bg-teal-50 px-2 py-1 rounded-full">生产力</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-4">面向开发者的在线工具集合，包含JSON格式化、正则测试、代码生成等功能。</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">TypeScript</span>
+                                <span class="tech-tag">Vite</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 个人经历时间线 -->
+        <section id="experience" class="py-20 md:py-32 px-6 bg-white/50">
+            <div class="max-w-4xl mx-auto">
+                <div class="reveal">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold mb-4">个人经历</h2>
+                    <p class="text-gray-500 mb-12 max-w-2xl">从校园到职场，每一段经历都是成长的印记。</p>
+                </div>
+                
+                <div class="timeline">
+                    <!-- 经历1 -->
+                    <div class="timeline-item reveal">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 md:p-8 ml-4">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                    <span class="text-xs font-mono text-blue-500 font-semibold">2024 - 至今</span>
+                                    <h3 class="text-xl font-semibold mt-1">高级前端工程师</h3>
+                                    <p class="text-gray-500">字节跳动 · 抖音电商部门</p>
+                                </div>
+                                <span class="mt-2 md:mt-0 inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium w-fit">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                    当前
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                负责电商核心交易链路的前端架构设计与性能优化，主导微前端架构升级，页面加载速度提升40%。
+                                带领5人小组完成多个大型营销活动项目，支撑单日GMV突破10亿。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">微前端</span>
+                                <span class="tech-tag">性能优化</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 经历2 -->
+                    <div class="timeline-item reveal" style="transition-delay: 0.1s">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 md:p-8 ml-4">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                    <span class="text-xs font-mono text-blue-500 font-semibold">2021 - 2024</span>
+                                    <h3 class="text-xl font-semibold mt-1">全栈开发工程师</h3>
+                                    <p class="text-gray-500">阿里巴巴 · 阿里云智能事业群</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                参与云产品控制台开发，负责云服务器ECS、对象存储OSS等核心产品的前端架构。
+                                从0到1搭建低代码平台组件库，服务内部100+业务团队，提升研发效率50%。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="tech-tag">Vue.js</span>
+                                <span class="tech-tag">Node.js</span>
+                                <span class="tech-tag">低代码</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 经历3 -->
+                    <div class="timeline-item reveal" style="transition-delay: 0.2s">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 md:p-8 ml-4">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                    <span class="text-xs font-mono text-blue-500 font-semibold">2019 - 2021</span>
+                                    <h3 class="text-xl font-semibold mt-1">计算机科学硕士</h3>
+                                    <p class="text-gray-500">清华大学 · 人机交互与可视化实验室</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                研究方向为数据可视化与人机交互，发表CCF B类会议论文2篇。
+                                参与多个国家级科研项目，获得国家奖学金、优秀毕业生等荣誉。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="tech-tag">数据可视化</span>
+                                <span class="tech-tag">D3.js</span>
+                                <span class="tech-tag">WebGL</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 经历4 -->
+                    <div class="timeline-item reveal" style="transition-delay: 0.3s">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-6 md:p-8 ml-4">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                    <span class="text-xs font-mono text-blue-500 font-semibold">2015 - 2019</span>
+                                    <h3 class="text-xl font-semibold mt-1">软件工程学士</h3>
+                                    <p class="text-gray-500">浙江大学 · 计算机科学与技术学院</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                系统学习计算机基础理论与软件开发方法，GPA专业前10%。
+                                获得ACM程序设计竞赛省级二等奖，担任计算机协会技术部部长，
+                                在校期间开始接触前端开发并建立个人技术博客。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="tech-tag">计算机基础</span>
+                                <span class="tech-tag">算法</span>
+                                <span class="tech-tag">前端入门</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我 -->
+        <section class="py-20 md:py-32 px-6">
+            <div class="max-w-4xl mx-auto text-center reveal">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6">
+                    让我们<span class="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">一起创造</span>
+                </h2>
+                <p class="text-gray-500 text-lg mb-10 max-w-xl mx-auto">
+                    如果您有项目合作意向、技术交流想法，或者只是想打个招呼，欢迎随时联系我！
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-4 mb-12">
+                    <a href="mailto:limingxuan@example.com" class="btn-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        发送邮件
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+                
+                <!-- 社交链接 -->
+                <div class="flex justify-center gap-6">
+                    <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors" aria-label="Twitter/X">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors" aria-label="LinkedIn">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors" aria-label="Instagram">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-8 px-6 border-t border-gray-100">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-gray-400 text-sm font-mono">
+                    © 2024 李明轩. Built with ❤️ and <span class="text-blue-500">code</span>
+                </p>
+                <p class="text-gray-400 text-xs font-mono">
+                    Designed in Apple × Geek style
+                </p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- 项目详情模态框 -->
+    <div id="projectModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="relative">
+                <img id="modalImage" src="" alt="" class="w-full h-64 md:h-80 object-cover rounded-t-3xl">
+                <button id="closeModal" class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition-colors" aria-label="关闭项目详情">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="flex items-start justify-between mb-4">
+                    <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                    <span id="modalBadge" class="text-xs px-3 py-1 rounded-full"></span>
+                </div>
+                <p id="modalDesc" class="text-gray-600 leading-relaxed mb-6"></p>
+                <div class="mb-6">
+                    <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">技术栈</h4>
+                    <div id="modalTechs" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div class="mb-6">
+                    <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">项目亮点</h4>
+                    <ul id="modalHighlights" class="space-y-2 text-gray-600 text-sm"></ul>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="btn-primary">
+                        访问项目
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        查看源码
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 项目数据
+        const projectsData = {
+            1: {
+                title: '智能电商平台',
+                image: 'http://i-blog.csdnimg.cn/img_convert/32df8bc4c7b9c8f7dbaccff172454c0a.jpeg',
+                badge: '已上线',
+                badgeClass: 'text-green-600 bg-green-50',
+                desc: '基于AI推荐算法的新一代电商平台，日活用户超过50万。通过深度学习模型实现个性化商品推荐，结合智能客服机器人提升用户购物体验。项目采用微服务架构，支持高并发场景下的稳定运行。',
+                techs: ['React', 'Node.js', 'MongoDB', 'Redis', 'TensorFlow', 'Docker'],
+                highlights: [
+                    '个性化推荐算法CTR提升35%',
+                    '支撑双11单日百万级QPS',
+                    '智能客服解决率达85%',
+                    '页面首屏加载时间<1.2s'
+                ]
+            },
+            2: {
+                title: '数据可视化平台',
+                image: 'http://q0.itc.cn/q_70/images01/20260521/f739514979184be5b5057437cda1a2ca.png',
+                badge: '企业级',
+                badgeClass: 'text-blue-600 bg-blue-50',
+                desc: '面向企业的一站式数据分析与可视化平台，支持拖拽式报表构建、多数据源接入、实时数据大屏展示。已服务超过200家企业客户，帮助用户快速洞察业务数据。',
+                techs: ['Vue3', 'ECharts', 'Python', 'FastAPI', 'PostgreSQL', 'ClickHouse'],
+                highlights: [
+                    '支持50+种可视化图表类型',
+                    '亿级数据亚秒级查询响应',
+                    '拖拽式零代码报表搭建',
+                    '多维度权限管理体系'
+                ]
+            },
+            3: {
+                title: '兴趣社交APP',
+                image: 'http://b0.bdstatic.com/866850836ea55f22fa90fbde84a5aeda.jpg',
+                badge: '10w+用户',
+                badgeClass: 'text-purple-600 bg-purple-50',
+                desc: '基于兴趣图谱的移动端社交应用，用户可以通过共同兴趣找到同好，参与话题讨论，组织线下活动。采用React Native跨平台开发，一套代码同时支持iOS和Android。',
+                techs: ['React Native', 'Firebase', 'WebSocket', 'Redux', 'Agora SDK'],
+                highlights: [
+                    '上线6个月突破10万注册用户',
+                    '日均消息量超过50万条',
+                    '兴趣匹配准确率达82%',
+                    '应用商店评分4.8/5.0'
+                ]
+            },
+            4: {
+                title: 'AI写作助手',
+                image: 'http://pics0.baidu.com/feed/d1160924ab18972ba5e668081bc56e999f510a28.jpeg?token=5bcf9d32cdade5746f6da1cf5d796e04',
+                badge: '开源项目',
+                badgeClass: 'text-orange-600 bg-orange-50',
+                desc: '集成大语言模型的智能写作浏览器插件与Web应用，支持多场景文案生成、内容润色、语法检查、多语言翻译等功能。开源后在GitHub获得1.2k Stars。',
+                techs: ['Next.js', 'OpenAI API', 'Tailwind CSS', 'Prisma', 'Chrome Extension'],
+                highlights: [
+                    'GitHub 1.2k+ Stars',
+                    '支持20+写作场景模板',
+                    'Chrome插件用户8000+',
+                    '平均润色满意度92%'
+                ]
+            },
+            5: {
+                title: '在线教育平台',
+                image: 'http://help.fanruan.com/jiushuyun/uploads/20240725/1721886715190508.png',
+                badge: '已上线',
+                badgeClass: 'text-green-600 bg-green-50',
+                desc: '综合性在线教育SaaS平台，提供直播授课、录播课程、互动白板、作业系统、考试测评、学习数据分析等完整功能。已被30+教育机构采用，服务学生超过5万人。',
+                techs: ['Vue.js', 'Django', 'WebRTC', 'Redis', 'MySQL', '阿里云OSS'],
+                highlights: [
+                    '支持万人同时在线直播',
+                    '互动白板延迟<100ms',
+                    '完整的学习数据分析',
+                    '多端自适应学习体验'
+                ]
+            },
+            6: {
+                title: '开发者工具集',
+                image: 'http://q0.itc.cn/images01/20251226/1526ae4ce6554c6a97562a5aec5941a9.png',
+                badge: '生产力',
+                badgeClass: 'text-teal-600 bg-teal-50',
+                desc: '面向开发者的在线工具集合，包含JSON格式化、正则表达式测试、Base64编解码、代码压缩、颜色选择器、时间戳转换等30+实用工具，全部本地运行保护数据安全。',
+                techs: ['React', 'TypeScript', 'Vite', 'Zustand', 'Monaco Editor'],
+                highlights: [
+                    '30+常用开发工具',
+                    '纯前端本地运行',
+                    '月活开发者2万+',
+                    'PWA支持离线使用'
+                ]
+            }
+        };
+
+        // 移动端菜单
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('active');
+            mobileMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuBtn.addEventListener('click', openMobileMenu);
+        closeMenu.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        // 滚动渐显动画
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // 技能条动画
+        const skillBars = document.querySelectorAll('.skill-progress');
+        
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const width = entry.target.dataset.width;
+                    entry.target.style.width = width + '%';
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        skillBars.forEach(bar => skillObserver.observe(bar));
+
+        // 导航栏active状态切换
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function updateActiveNav() {
+            const scrollY = window.scrollY;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + sectionId) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
+
+        // 项目模态框
+        const projectCards = document.querySelectorAll('.project-card');
+        const projectModal = document.getElementById('projectModal');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        function openModal(projectId) {
+            const project = projectsData[projectId];
+            if (!project) return;
+            
+            document.getElementById('modalImage').src = project.image;
+            document.getElementById('modalTitle').textContent = project.title;
+            document.getElementById('modalBadge').textContent = project.badge;
+            document.getElementById('modalBadge').className = `text-xs px-3 py-1 rounded-full ${project.badgeClass}`;
+            document.getElementById('modalDesc').textContent = project.desc;
+            
+            const techsContainer = document.getElementById('modalTechs');
+            techsContainer.innerHTML = project.techs.map(tech => `<span class="tech-tag">${tech}</span>`).join('');
+            
+            const highlightsContainer = document.getElementById('modalHighlights');
+            highlightsContainer.innerHTML = project.highlights.map(h => `
+                <li class="flex items-start gap-2">
+                    <svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    ${h}
+                </li>
+            `).join('');
+            
+            projectModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            projectModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        projectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const projectId = card.dataset.project;
+                openModal(projectId);
+            });
+        });
+
+        closeModalBtn.addEventListener('click', closeModal);
+        projectModal.addEventListener('click', (e) => {
+            if (e.target === projectModal) {
+                closeModal();
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeMobileMenu();
+            }
+        });
+
+        // 导航栏滚动效果
+        let lastScroll = 0;
+        const navbar = document.querySelector('.navbar');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            
+            if (currentScroll > 50) {
+                navbar.style.boxShadow = '0 1px 12px rgba(0,0,0,0.06)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetEl = document.querySelector(targetId);
+                if (targetEl) {
+                    const offsetTop = targetEl.offsetTop - 70;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // GSAP 装饰动画
+        gsap.to('.floating-code', {
+            y: -20,
+            duration: 3,
+            ease: 'power1.inOut',
+            yoyo: true,
+            repeat: -1,
+            stagger: 0.5
+        });
+    </script>
+</body>
+</html>
